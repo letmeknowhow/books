@@ -121,7 +121,7 @@ code-push release wealth  ./release 1.0.0
 ```
 5. 发布到codepush
 
-`特别提醒:` 最后的版本号一定要于 android工程及ios工程中设置的版本号保持一致,因为codepush不会跨软件版本号更新
+`特别提醒:` 最后的版本号一定要与 android工程及ios工程中设置的版本号保持一致,因为codepush不会跨软件版本号更新
 ```
 code-push release MyApp android/app/src/main/assets/index.android.jsbundle 1.0.1
 ```
