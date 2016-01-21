@@ -39,124 +39,85 @@ Network request failed
 # 处理渐帧动画时,比如实现连续移动使用 setNativeProps 要比 setState 方式性能要好得多
 
 ```
-
-const Marquee = React.createClass({
-  mixins: [TimerMixin],
-
-  _previousTop: 0,
-  _Styles: {},
-  _ref: null,
-
-  componentWillMount() {
-    this._previousTop = 200;
-    this._circleStyles = {
-      style: {
-        top: this._previousTop
-      }
-    };
-  },
-
-  _updatePosition: function () {
-    this._ref && this._ref.setNativeProps(this._circleStyles);
-  },
-
-  slideUp() {
-
-    (this._previousTop < -440 )? this._previousTop = 200 : this._previousTop -= 0.5;
-    this._circleStyles.style.top = this._previousTop;
-    this._updatePosition();
-    this.setTimeout(
-      ()=>{
-        this.slideUp();
-      }, 20)
-  },
-
-  componentDidMount() {
-    this.slideUp()
-  },
-
-  renderItem() {
-    return mockData.map((item, index) => {
-      let color = (index % 2) ? 'blue' : 'green';
-      return (
-        <View key={index} style={{ height: 40, backgroundColor: color, width: 200}}>
-          <Text>{index.toString()}</Text>
-        </View>
-      );
-    });
-  },
-
-  render(){
-    return (
-      <View style={styles.marqueeContainer}>
-        <View
-          ref={(component) => { this._ref = component; }}
-          style={styles.marquee}>
-          {this.renderItem()}
-        </View>
-      </View>
-    );
+/**
+ * class: Marquee
+ * author: Niu Xiaoyu
+ * date: 2016-1-3
+ * description: 跑马灯组件,循环滚动播放容器内容
+ *              暂时只支持纵向向上滚动,如果后续有其他类似功能可扩展该组件
+ */
+import React from 'react-native';
+const { Component, View, Text, PropTypes, StyleSheet } = React;
+const styles = StyleSheet.create({
+  marquee: {
+    position: 'absolute',
+    backgroundColor: 'transparent'
   }
 });
 
-const Marquee = React.createClass({
-  mixins: [TimerMixin],
-
-  _previousTop: 0,
-  _Styles: {},
-  _ref: null,
-
-  componentWillMount() {
-    this._previousTop = 200;
-    this._circleStyles = {
-      style: {
-        top: this._previousTop
-      }
-    };
-  },
-
-  _updatePosition: function () {
-    this._ref && this._ref.setNativeProps(this._circleStyles);
-  },
+export default class Marquee extends Component {
+  static propTypes = {
+    data: PropTypes.arrayOf(PropTypes.string),
+    containerHeight: PropTypes.number,
+    rowHeight: PropTypes.number
+  };
+  static defaultProps = {
+    data: []
+  };
+  constructor(props) {
+    super(props);
+    // 初始状态
+    this.state = {};
+  }
 
   slideUp() {
+    let dataHeight = this.props.data.length * this.props.rowHeight;
+    if (this._defaultTop < (0 - dataHeight)) {
+      this._defaultTop = this.props.containerHeight;
+    }
+    this._defaultTop -= 0.5;
+    this._circleStyles.style.top = this._defaultTop;
+    this._viewRef && this._viewRef.setNativeProps(this._circleStyles);
+  }
 
-    (this._previousTop < -440 )? this._previousTop = 200 : this._previousTop -= 0.5;
-    this._circleStyles.style.top = this._previousTop;
-    this._updatePosition();
-    this.setTimeout(
-      ()=>{
-        this.slideUp();
-      }, 20)
-  },
-
+  componentWillMount() {
+    this._defaultTop = this.props.containerHeight;
+    this._circleStyles = {
+      style: {
+        top: this._defaultTop
+      }
+    };
+  }
+  
   componentDidMount() {
-    this.slideUp()
-  },
+    this._timer = setInterval(() => this.slideUp(), 20);
+  }
+
+  componentWillUnmount() {
+    clearInterval(this._timer);
+  }
 
   renderItem() {
-    return mockData.map((item, index) => {
-      let color = (index % 2) ? 'blue' : 'green';
+    return this.props.data.map((item, index) => {
       return (
-        <View key={index} style={{ height: 40, backgroundColor: color, width: 200}}>
-          <Text>{index.toString()}</Text>
+        <View key={index} style={{ height: this.props.rowHeight, backgroundColor: 'transparent'}}>
+          <Text>{item}</Text>
         </View>
       );
     });
-  },
+  }
 
-  render(){
+  render() {
     return (
-      <View style={styles.marqueeContainer}>
-        <View
-          ref={(component) => { this._ref = component; }}
-          style={styles.marquee}>
-          {this.renderItem()}
-        </View>
+      <View
+        ref={ref => this._viewRef = ref}
+        style={ style=styles.marquee }>
+        {this.renderItem()}
       </View>
     );
   }
-});
+}
+
 
 ```
 
