@@ -163,3 +163,43 @@ const Marquee = React.createClass({
 # IOS模拟器 变慢的问题解决
 
 确保在ios模拟器的菜单里 `Debug->show animation` 未勾选
+
+# 给NavigationBar配置action
+配置action是不要直接指定路由，例如在wealth项目中"
+```js
+actionFunc={this.props.actions.routes.signIn()}
+```
+由于路由通过signIn进入Home，当每次Home为active时，signIn也会被重新创建，其componentDidMount也会被执行。
+解决方法：通过action修改state，在app中根据状态来决定路由
+```js
+actionFunc={this.props.actions.deleteSessionToken}
+```
+在action中
+```js
+// 删除 sessiontoken
+export function deleteSessionToken() {
+  return dispatch => {
+    return appAuthToken.deleteSessionToken().then(() => {
+      dispatch(loggedOutState());
+    });
+  }
+}
+```
+app文件
+```js
+shouldComponentUpdate(nextProps, nextState) {
+    if (nextProps.auth.state !== this.props.auth.state) {
+      if (nextProps.auth.state === LOGGED_IN_STATE) {
+        this.props.actions.replace({name: 'home', tabBarName: 'tabBar', data: {}});
+      } else if (nextProps.auth.state === LOGGED_OUT_STATE) {
+        this.props.actions.replace({name: 'signIn', data: {}});
+      } else if (nextProps.auth.state === 'sigin00') {
+        // 当用户的状态是登陆之后 显示手势密码
+
+      }
+      return false;
+    } else {
+      return true;
+    }
+  }
+```
