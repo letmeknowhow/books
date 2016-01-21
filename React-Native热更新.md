@@ -84,12 +84,13 @@ defaultConfig {
 ```bash
 npm install -g code-push-cli
 ```
-2. 创建Codepush帐号
+2. 创建Codepush帐号(弹出注册窗口，注册后会生成一串码)
+（可以用code-push login 登录，然后生成一个文件.注意网络问题会告知不成功，多操作几次）
 
 ```
-code-push app add appName
+code-push register
 ```
-3. 添加一个应用
+3. 添加一个应用,将staging key设置到info.plist的CodePushDeploymentKey
 
 ```
   code-push app add appName
