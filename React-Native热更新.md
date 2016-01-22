@@ -1,3 +1,5 @@
+#参考文档
+<a>https://github.com/Microsoft/react-native-code-push</a>
 # CodePush安装
 
 安装CodePush
