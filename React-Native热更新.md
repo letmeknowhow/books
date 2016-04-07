@@ -40,36 +40,33 @@
 1. 修改`MainAcivity.java`让CodePush起作用
   
 ```java
-  ...
-// 1. 引用CodePush
+...
+// 1. Import the plugin class (if you used RNPM to install the plugin, this
+// should already be done for you automatically so you can skip this step).
 import com.microsoft.codepush.react.CodePush;
 
-// 2. 可选: 如果想通过一个对话框提示用户更新，可以将 Activity 替换为 FragmentActivity
-// 注：如果替换成 FragmentActivity，编译时会提示找不到 FragentActivity, 具体原因有待解决
-public class MainActivity extends Activity implements DefaultHardwareBackBtnHandler {
-    ...
+public class MainActivity extends ReactActivity {
+    // 2. Override the getJSBundleFile method in order to let
+    // the CodePush runtime determine where to get the JS
+    // bundle location from on each app start
+    @Override
+    protected String getJSBundleFile() {
+        return CodePush.getBundleUrl();
+    }
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        ...
-        // 3. 初始化CodePush需要两个参数 develop-key 和 MainActivity的实例 this
-        CodePush codePush = new CodePush("d73bf5d8-4fbd-4e55-a837-accd328a21ba", this);
-        ...
-        mReactInstanceManager = ReactInstanceManager.builder()
-                .setApplication(getApplication())
-                ...
-                // 4. 删除这行 --> .setBundleAssetName("index.android.bundle")
-
-                // 5. setJSBundleFile 是ReactNative提供的，它允许从文件系统中加载 bundle.
-                // 现在我们让codePush来决定index.android.bundle的位置，首页codepush会检测
-                // 是否有可更新的 bundle,如果有，codepush会自动下载到 android/app/src/main/assets/index.android.bundle
-                // 如果没有，刚使用之前已下载过的 android/app/src/main/assets/index.android.bundle
-                .setJSBundleFile(codePush.getBundleUrl("index.android.bundle"))
-
-                // 6. 导出CodePush模块给JavaScript.
-                .addPackage(codePush.getReactPackage())
-                ...
+    protected List<ReactPackage> getPackages() {
+        // 3. Instantiate an instance of the CodePush runtime and add it to the list of
+        // existing packages, specifying the right deployment key. If you don't already 
+        // have it, you can run "code-push deployment ls <appName> -k" to retrieve your key.
+        return Arrays.<ReactPackage>asList(
+            new MainReactPackage(),
+            // new CodePush() <-- remove this generated line if you used RNPM for plugin installation.
+            new CodePush("deployment-key-here", this, BuildConfig.DEBUG)
+        );
     }
+
+    ...
 }
 
 ```
