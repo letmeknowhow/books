@@ -26,6 +26,13 @@
       compile project(':react-native-code-push')
   }
 ```
+3. (Only needed in v1.8.0+ of the plugin) In your android/app/build.gradle file, add the codepush.gradle file as an additional build task definition underneath react.gradle:
+```bash
+  ...
+  apply from: "react.gradle"
+  apply from: "../../node_modules/react-native-code-push/android/codepush.gradle"
+  ...
+```
 
 ## 插件配置 Android
 经过上面的步骤就完成了CodePush插件的安装，接下来需要配置CodePush以实现重新定位`index.android.bundle`
