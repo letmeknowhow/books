@@ -96,10 +96,14 @@ npm install -g code-push-cli
 ```
 code-push register
 ```
-3. 添加一个应用,将staging key设置到info.plist的CodePushDeploymentKey
+3. 添加一个应用,将staging key设置到info.plist的CodePushDeploymentKey,
 
 ```
   code-push app add appName
+```
+也可用一下命令查看已经上传的app的CodePushDeploymentKey
+```
+  code-push deployment ls <appName> -k
 ```
 4. 打包bundle
 
